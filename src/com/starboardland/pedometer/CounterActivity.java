@@ -1,17 +1,30 @@
 package com.starboardland.pedometer;
 
 import android.app.Activity;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.hardware.*;
 import android.os.Bundle;
+import android.widget.CompoundButton;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ToggleButton;
+
 
 public class CounterActivity extends Activity implements SensorEventListener {
 
     private SensorManager sensorManager;
     private TextView count;
+    private static int steps;
     boolean activityRunning;
+
+    private PendingIntent pendingIntent;
+    private AlarmManager manager;
+
+    AlarmReceiver alarm = new AlarmReceiver();
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -20,6 +33,22 @@ public class CounterActivity extends Activity implements SensorEventListener {
         count = (TextView) findViewById(R.id.count);
 
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        // Retrieve a PendingIntent that will perform a broadcast
+
+        Intent alarmIntent = new Intent(this, AlarmReceiver.class);
+        pendingIntent = PendingIntent.getBroadcast(this, 0, alarmIntent, 0);
+
+
+        ToggleButton toggle = (ToggleButton) findViewById(R.id.button);
+        toggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    startAlarm();
+                } else {
+                    cancelAlarm();
+                }
+            }
+        });
     }
 
     @Override
@@ -46,12 +75,30 @@ public class CounterActivity extends Activity implements SensorEventListener {
     @Override
     public void onSensorChanged(SensorEvent event) {
         if (activityRunning) {
-            count.setText(String.valueOf(event.values[0]));
+            steps = Math.round(event.values[0]);
+            count.setText(String.valueOf(steps));
         }
 
     }
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
+    }
+
+    public void startAlarm() {
+        manager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
+        int interval = 60000;
+
+        manager.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), interval, pendingIntent);
+        Toast.makeText(this, "Alarm Set", Toast.LENGTH_SHORT).show();
+    }
+
+    public void cancelAlarm() {
+        manager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
+        manager.cancel(pendingIntent);
+    }
+
+    public static int getSteps() {
+        return steps;
     }
 }
