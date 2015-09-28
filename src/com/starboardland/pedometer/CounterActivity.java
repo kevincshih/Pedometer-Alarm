@@ -7,7 +7,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.hardware.*;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.CompoundButton;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
@@ -22,6 +24,7 @@ public class CounterActivity extends Activity implements SensorEventListener {
 
     private PendingIntent pendingIntent;
     private AlarmManager manager;
+    private ProgressBar mProgress;
 
     AlarmReceiver alarm = new AlarmReceiver();
 
@@ -31,6 +34,7 @@ public class CounterActivity extends Activity implements SensorEventListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         count = (TextView) findViewById(R.id.count);
+        mProgress = (ProgressBar) findViewById(R.id.circle_progress_bar);
 
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         // Retrieve a PendingIntent that will perform a broadcast
@@ -75,8 +79,13 @@ public class CounterActivity extends Activity implements SensorEventListener {
     @Override
     public void onSensorChanged(SensorEvent event) {
         if (activityRunning) {
+            Log.i("SensorChanged", "event = " + event.toString());
             steps = Math.round(event.values[0]);
+            Log.i("SetText", "steps = " + steps);
             count.setText(String.valueOf(steps));
+            Log.i("setProgress", "progress = " + steps * 100 / 10000);
+            mProgress.setProgress(steps * 100 / 10000);
+            Log.i("Done", "done");
         }
 
     }
