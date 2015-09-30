@@ -19,21 +19,8 @@ import android.widget.Toast;
 import android.widget.ToggleButton;
 
 
-public class CounterActivity extends Activity implements SensorEventListener {
+public class CounterActivity extends Activity {
 
-    private SensorManager sensorManager;
-    private TextView count;
-    private static int steps;
-    boolean activityRunning;
-
-    private PendingIntent pendingIntent;
-    private AlarmManager manager;
-    private ProgressBar mProgress;
-
-    private Button settings;
-    private ToggleButton toggle;
-
-    AlarmReceiver alarm = new AlarmReceiver();
 
     ActionBar.Tab Tab1, Tab2, Tab3;
     Fragment fragmentTab1 = new FragmentTab1();
@@ -46,7 +33,6 @@ public class CounterActivity extends Activity implements SensorEventListener {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
-
 
         ActionBar actionBar = getActionBar();
 
@@ -75,15 +61,6 @@ public class CounterActivity extends Activity implements SensorEventListener {
         actionBar.addTab(Tab3);
 
 
-
-        count = (TextView) findViewById(R.id.count);
-        mProgress = (ProgressBar) findViewById(R.id.circle_progress_bar);
-
-        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-        // Retrieve a PendingIntent that will perform a broadcast
-
-        Intent alarmIntent = new Intent(this, AlarmReceiver.class);
-        pendingIntent = PendingIntent.getBroadcast(this, 0, alarmIntent, 0);
 /*
         settings = (Button) findViewById(R.id.settings);
         settings.setOnClickListener(new Button.OnClickListener() {
@@ -107,6 +84,8 @@ public class CounterActivity extends Activity implements SensorEventListener {
         */
     }
 
+
+    /*
     @Override
     protected void onResume() {
         super.onResume();
@@ -128,23 +107,7 @@ public class CounterActivity extends Activity implements SensorEventListener {
 //        sensorManager.unregisterListener(this); 
     }
 
-    @Override
-    public void onSensorChanged(SensorEvent event) {
-        if (activityRunning) {
-            Log.i("SensorChanged", "event = " + event.toString());
-            steps = Math.round(event.values[0]);
-            Log.i("SetText", "steps = " + steps);
-            count.setText(String.valueOf(steps));
-            Log.i("setProgress", "progress = " + steps * 100 / 10000);
-            mProgress.setProgress(steps * 100 / 10000);
-            Log.i("Done", "done");
-        }
 
-    }
-
-    @Override
-    public void onAccuracyChanged(Sensor sensor, int accuracy) {
-    }
 
     public void startAlarm() {
         manager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
@@ -162,4 +125,5 @@ public class CounterActivity extends Activity implements SensorEventListener {
     public static int getSteps() {
         return steps;
     }
+    */
 }
