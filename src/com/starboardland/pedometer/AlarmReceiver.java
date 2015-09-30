@@ -12,7 +12,7 @@ public class AlarmReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context arg0, Intent arg1) {
         // For our recurring task, we'll just display a message
-        int steps = FragmentTab1.getSteps();
+        int steps = CounterActivity.getSteps();
         Calendar c = Calendar.getInstance();
         int hour = c.get(Calendar.HOUR_OF_DAY);
         if (steps < 10000 * hour / 24){

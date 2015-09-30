@@ -19,7 +19,7 @@ import android.widget.Toast;
 import android.widget.ToggleButton;
 
 
-public class CounterActivity extends Activity {
+public class CounterActivity extends Activity implements SensorEventListener {
 
 
     ActionBar.Tab Tab1, Tab2, Tab3;
@@ -27,13 +27,15 @@ public class CounterActivity extends Activity {
     Fragment fragmentTab2 = new FragmentTab2();
     Fragment fragmentTab3 = new FragmentTab3();
 
-
+    private SensorManager sensorManager;
+    private static int steps;
+    boolean activityRunning;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
-
+        Log.i("debug", "onCreate");
         ActionBar actionBar = getActionBar();
 
         // Hide Actionbar Icon
@@ -59,7 +61,9 @@ public class CounterActivity extends Activity {
         actionBar.addTab(Tab1);
         actionBar.addTab(Tab2);
         actionBar.addTab(Tab3);
+        Log.i("debug", "actionBar done");
 
+        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
 
 /*
         settings = (Button) findViewById(R.id.settings);
@@ -85,30 +89,32 @@ public class CounterActivity extends Activity {
     }
 
 
-    /*
+
     @Override
     protected void onResume() {
         super.onResume();
+        Log.i("debug", "onResume");
         activityRunning = true;
         Sensor countSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
+        Log.i("debug", "countSensor");
         if (countSensor != null) {
             sensorManager.registerListener(this, countSensor, SensorManager.SENSOR_DELAY_UI);
         } else {
             Toast.makeText(this, "Count sensor not available!", Toast.LENGTH_LONG).show();
         }
-
+        Log.i("debug", "onResume done");
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+        Log.i("debug", "onPause done");
         activityRunning = false;
         // if you unregister the last listener, the hardware will stop detecting step events
 //        sensorManager.unregisterListener(this); 
     }
 
-
-
+    /*
     public void startAlarm() {
         manager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
         int interval = 60000;
@@ -121,9 +127,25 @@ public class CounterActivity extends Activity {
         manager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
         manager.cancel(pendingIntent);
     }
+    */
+
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+        if (activityRunning) {
+            Log.i("debug", "SensorChanged:event = " + event.toString());
+            steps = Math.round(event.values[0]);
+            FragmentTab1 ft1 = (FragmentTab1) fragmentTab1;
+            ft1.update();
+            Log.i("debug", "done");
+        }
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+    }
 
     public static int getSteps() {
         return steps;
     }
-    */
+
 }

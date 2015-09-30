@@ -20,16 +20,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
-public class FragmentTab1 extends Fragment implements SensorEventListener {
-    private SensorManager sensorManager;
-    private TextView count;
-    private static int steps;
-    boolean activityRunning;
+public class FragmentTab1 extends Fragment {
 
     //private PendingIntent pendingIntent;
     //private AlarmManager manager;
     private ProgressBar mProgress;
-
+    private TextView count;
+    private int steps;
     private Button settings;
     private ToggleButton toggle;
 
@@ -39,10 +36,15 @@ public class FragmentTab1 extends Fragment implements SensorEventListener {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragmenttab1, container, false);
-        count = (TextView) rootView.findViewById(R.id.count);
-        mProgress = (ProgressBar) rootView.findViewById(R.id.circle_progress_bar);
+        Log.i("debug", "rootView");
 
-        sensorManager = (SensorManager) getActivity().getSystemService(Context.SENSOR_SERVICE);
+        count = (TextView) rootView.findViewById(R.id.count);
+        Log.i("debug", "count = " + count.toString());
+
+        mProgress = (ProgressBar) rootView.findViewById(R.id.circle_progress_bar);
+        Log.i("debug", "mProgress = " + mProgress.toString());
+
+
         // Retrieve a PendingIntent that will perform a broadcast
 
         //Intent alarmIntent = new Intent(this, AlarmReceiver.class);
@@ -55,43 +57,18 @@ public class FragmentTab1 extends Fragment implements SensorEventListener {
     @Override
     public void onResume() {
         super.onResume();
-        activityRunning = true;
-        Sensor countSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
-        if (countSensor != null) {
-            sensorManager.registerListener(this, countSensor, SensorManager.SENSOR_DELAY_UI);
-        } else {
-            Toast.makeText(getActivity(), "Count sensor not available!", Toast.LENGTH_LONG).show();
-        }
+        Log.i("debug", "onResume FT1");
+        update();
     }
 
-    @Override
-    public void onPause() {
-        super.onPause();
-        activityRunning = false;
-        // if you unregister the last listener, the hardware will stop detecting step events
-//        sensorManager.unregisterListener(this);
+    public void update() {
+        steps = CounterActivity.getSteps();
+        Log.i("debug", "SetText:steps = " + steps);
+        count.setText(String.valueOf(steps));
+        Log.i("debug", "setProgress:progress = " + steps * 100 / 10000);
+        mProgress.setProgress(steps * 100 / 10000);
     }
 
 
-    @Override
-    public void onAccuracyChanged(Sensor sensor, int accuracy) {
-    }
-
-    @Override
-    public void onSensorChanged(SensorEvent event) {
-        if (activityRunning) {
-            Log.i("SensorChanged", "event = " + event.toString());
-            steps = Math.round(event.values[0]);
-            Log.i("SetText", "steps = " + steps);
-            count.setText(String.valueOf(steps));
-            Log.i("setProgress", "progress = " + steps * 100 / 10000);
-            mProgress.setProgress(steps * 100 / 10000);
-            Log.i("Done", "done");
-        }
-    }
-
-    public static int getSteps() {
-        return steps;
-    }
 
 }
