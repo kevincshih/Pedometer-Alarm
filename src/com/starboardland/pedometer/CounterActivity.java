@@ -1,13 +1,17 @@
 package com.starboardland.pedometer;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlarmManager;
+import android.app.Fragment;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.hardware.*;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -26,13 +30,52 @@ public class CounterActivity extends Activity implements SensorEventListener {
     private AlarmManager manager;
     private ProgressBar mProgress;
 
+    private Button settings;
+    private ToggleButton toggle;
+
     AlarmReceiver alarm = new AlarmReceiver();
+
+    ActionBar.Tab Tab1, Tab2, Tab3;
+    Fragment fragmentTab1 = new FragmentTab1();
+    Fragment fragmentTab2 = new FragmentTab2();
+    Fragment fragmentTab3 = new FragmentTab3();
+
 
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
+
+
+        ActionBar actionBar = getActionBar();
+
+        // Hide Actionbar Icon
+        actionBar.setDisplayShowHomeEnabled(false);
+
+        // Hide Actionbar Title
+        actionBar.setDisplayShowTitleEnabled(false);
+
+        // Create Actionbar Tabs
+        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+
+        // Set Tab Icon and Titles
+        Tab1 = actionBar.newTab().setText("Pedometer");
+        Tab2 = actionBar.newTab().setText("History");
+        Tab3 = actionBar.newTab().setText("Settings");
+
+        // Set Tab Listeners
+        Tab1.setTabListener(new TabListener(fragmentTab1));
+        Tab2.setTabListener(new TabListener(fragmentTab2));
+        Tab3.setTabListener(new TabListener(fragmentTab3));
+
+        // Add tabs to actionbar
+        actionBar.addTab(Tab1);
+        actionBar.addTab(Tab2);
+        actionBar.addTab(Tab3);
+
+
+
         count = (TextView) findViewById(R.id.count);
         mProgress = (ProgressBar) findViewById(R.id.circle_progress_bar);
 
@@ -41,9 +84,17 @@ public class CounterActivity extends Activity implements SensorEventListener {
 
         Intent alarmIntent = new Intent(this, AlarmReceiver.class);
         pendingIntent = PendingIntent.getBroadcast(this, 0, alarmIntent, 0);
+/*
+        settings = (Button) findViewById(R.id.settings);
+        settings.setOnClickListener(new Button.OnClickListener() {
+            public void onClick(View v){
+                Context context = v.getContext();
+                Intent intent = new Intent(context, AlarmSettings.class);
+                context.startActivity(intent);
+            }
+        });
 
-
-        ToggleButton toggle = (ToggleButton) findViewById(R.id.button);
+        toggle = (ToggleButton) findViewById(R.id.button);
         toggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
@@ -53,6 +104,7 @@ public class CounterActivity extends Activity implements SensorEventListener {
                 }
             }
         });
+        */
     }
 
     @Override
