@@ -5,26 +5,30 @@ import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.Fragment;
 import android.app.PendingIntent;
+import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.hardware.*;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ProgressBar;
+import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
+import android.preference.PreferenceScreen;
 
 
 public class CounterActivity extends Activity implements SensorEventListener {
 
 
-    ActionBar.Tab Tab1, Tab2, Tab3;
+    ActionBar.Tab Tab1, Tab3;
     Fragment fragmentTab1 = new FragmentTab1();
-    Fragment fragmentTab2 = new FragmentTab2();
     Fragment fragmentTab3 = new FragmentTab3();
 
     private SensorManager sensorManager;
@@ -39,27 +43,25 @@ public class CounterActivity extends Activity implements SensorEventListener {
         ActionBar actionBar = getActionBar();
 
         // Hide Actionbar Icon
-        actionBar.setDisplayShowHomeEnabled(false);
+        //actionBar.setDisplayShowHomeEnabled(false);
 
         // Hide Actionbar Title
-        actionBar.setDisplayShowTitleEnabled(false);
+        //actionBar.setDisplayShowTitleEnabled(false);
 
         // Create Actionbar Tabs
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 
         // Set Tab Icon and Titles
         Tab1 = actionBar.newTab().setText("Pedometer");
-        Tab2 = actionBar.newTab().setText("History");
-        Tab3 = actionBar.newTab().setText("Settings");
+        Tab3 = actionBar.newTab().setText("History");
 
         // Set Tab Listeners
         Tab1.setTabListener(new TabListener(fragmentTab1));
-        Tab2.setTabListener(new TabListener(fragmentTab2));
         Tab3.setTabListener(new TabListener(fragmentTab3));
 
         // Add tabs to actionbar
         actionBar.addTab(Tab1);
-        actionBar.addTab(Tab2);
+        //actionBar.addTab(Tab2);
         actionBar.addTab(Tab3);
         Log.i("debug", "actionBar done");
 
@@ -128,6 +130,32 @@ public class CounterActivity extends Activity implements SensorEventListener {
         manager.cancel(pendingIntent);
     }
     */
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle presses on the action bar items
+        switch (item.getItemId()) {
+            case R.id.action_settings:
+                openSettings();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+
+    public void openSettings(){
+        Intent i = new Intent(this, MyPreferencesActivity.class);
+        Log.i("Debug", "openSettings");
+        startActivity(i);
+    }
+
 
     @Override
     public void onSensorChanged(SensorEvent event) {
