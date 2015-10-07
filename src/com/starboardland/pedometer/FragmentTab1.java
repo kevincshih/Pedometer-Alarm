@@ -26,7 +26,7 @@ public class FragmentTab1 extends Fragment {
     //private AlarmManager manager;
     private ProgressBar mProgress;
     private TextView count;
-    private int steps;
+    private int steps, goal;
     private Button settings;
     private ToggleButton toggle;
 
@@ -40,6 +40,9 @@ public class FragmentTab1 extends Fragment {
 
         count = (TextView) rootView.findViewById(R.id.count);
         Log.i("debug", "count = " + count.toString());
+        count.setText("10000");
+        Log.i("debug", "count set text");
+
 
         mProgress = (ProgressBar) rootView.findViewById(R.id.circle_progress_bar);
         Log.i("debug", "mProgress = " + mProgress.toString());
@@ -63,10 +66,14 @@ public class FragmentTab1 extends Fragment {
 
     public void update() {
         steps = CounterActivity.getSteps();
+        goal = CounterActivity.getGoal();
         Log.i("debug", "SetText:steps = " + steps);
+        Log.i("debug", "count = " + count.toString());
+        Log.i("debug", "goal = " + goal);
+
         count.setText(String.valueOf(steps));
-        Log.i("debug", "setProgress:progress = " + steps * 100 / 10000);
-        mProgress.setProgress(steps * 100 / 10000);
+        Log.i("debug", "setProgress:progress = " + steps * 100 / goal);
+        mProgress.setProgress(steps * 100 / goal);
     }
 
 

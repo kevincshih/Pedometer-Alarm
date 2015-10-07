@@ -2,9 +2,10 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" android:background="@color/white">
 
     <EditTextPreference android:title="Daily Goal"
-        android:key="goal"
+        android:key="@string/goal"
         android:summary="Daily Goal in steps"
-        android:defaultValue = "10000"></EditTextPreference>
+        android:defaultValue = "@string/default_goal">
+    </EditTextPreference>
     <!--DialogPreference android:title="Alarm Time"
         android:key="time"
         android:summary="Set Alarm Time"
@@ -14,17 +15,17 @@
         android:positiveButtonText="Ok">
     </DialogPreference-->
     <com.starboardland.pedometer.TimePreference
-        android:key="time"
+        android:key="@string/time"
         android:title="Alarm Time"
         android:summary="Set the alarm time"
-        android:defaultValue="18:00"
+        android:defaultValue="@string/default_time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
     </com.starboardland.pedometer.TimePreference>
     <CheckBoxPreference android:title="Alarm Enabled"
         android:defaultValue="false"
         android:summary="Alarm will trigger if goal not met by alarm time"
-        android:key="alarm" />
+        android:key="@string/alarm"/>
     <!--ListPreference     android:title="Download Details"
         android:summary="Select the kind of data that you would like to download"
         android:key="downloadType"
