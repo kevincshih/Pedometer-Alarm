@@ -25,6 +25,7 @@ import android.widget.Toast;
 import android.widget.ToggleButton;
 import android.preference.PreferenceScreen;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 
@@ -40,6 +41,7 @@ public class CounterActivity extends Activity implements SensorEventListener {
     private static boolean activityRunning, alarmOn;
     private static String alarmTime;
     private long alarmTimeMs;
+    private SharedPreferences preferences;
     private static SharedPreferences.OnSharedPreferenceChangeListener sharedPreferenceChangeListener;
 
     @Override
@@ -92,9 +94,12 @@ public class CounterActivity extends Activity implements SensorEventListener {
 
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
 
+
+
         sharedPreferenceChangeListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
             @Override
             public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+                FragmentTab1 ft1 = (FragmentTab1) fragmentTab1;
                 Log.i("debug", "onSharedPreferenceChanged key = " + key);
                 if (key.equals(getResources().getString(R.string.time))) {
                     alarmTime = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString(getString(R.string.time), getString(R.string.default_time));
@@ -103,6 +108,8 @@ public class CounterActivity extends Activity implements SensorEventListener {
                     calendar.set(Calendar.MINUTE, TimePreference.getMinute(alarmTime));
                     calendar.set(Calendar.SECOND, 00);
                     alarmTimeMs = calendar.getTimeInMillis();
+                    SimpleDateFormat sdf = new SimpleDateFormat("HH:mm a");
+                    ft1.updateAlarmTime(sdf.format(calendar.getTime()));
                     Log.i("debug", "alarmTimeMs = " + alarmTimeMs);
 
                 } else if (key.equals(getResources().getString(R.string.goal))) {
@@ -111,10 +118,12 @@ public class CounterActivity extends Activity implements SensorEventListener {
                         Toast.makeText(getApplicationContext(), "Goal must be greater than 0.", Toast.LENGTH_LONG).show();
                         goal = 1;
                     }
+                    ft1.updateGoal(goal);
                     Log.i("debug", "goal = " + goal);
 
                 } else if (key.equals(getResources().getString(R.string.alarm))) {
                     alarmOn = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean(getString(R.string.alarm), false);
+                    ft1.updateAlarmOn(alarmOn);
                     Log.i("debug", "alarmOn = " + alarmOn);
                     if (alarmOn) {
                         Intent myIntent = new Intent(getApplicationContext(), AlarmReceiver.class);
@@ -125,12 +134,10 @@ public class CounterActivity extends Activity implements SensorEventListener {
                 }
             }
         };
-        SharedPreferences preferences=PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+
+        preferences=PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         preferences.registerOnSharedPreferenceChangeListener(sharedPreferenceChangeListener);
 
-        sharedPreferenceChangeListener.onSharedPreferenceChanged(preferences, getResources().getString(R.string.time));
-        sharedPreferenceChangeListener.onSharedPreferenceChanged(preferences, getResources().getString(R.string.goal));
-        sharedPreferenceChangeListener.onSharedPreferenceChanged(preferences, getResources().getString(R.string.alarm));
 
     }
     /*
@@ -159,6 +166,11 @@ public class CounterActivity extends Activity implements SensorEventListener {
         super.onResume();
         Log.i("debug", "onResume");
         activityRunning = true;
+
+        sharedPreferenceChangeListener.onSharedPreferenceChanged(preferences, getResources().getString(R.string.time));
+        sharedPreferenceChangeListener.onSharedPreferenceChanged(preferences, getResources().getString(R.string.goal));
+        sharedPreferenceChangeListener.onSharedPreferenceChanged(preferences, getResources().getString(R.string.alarm));
+
         Sensor countSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
         Log.i("debug", "countSensor");
         if (countSensor != null) {

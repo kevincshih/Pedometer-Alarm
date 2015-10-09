@@ -8,6 +8,8 @@
     <string name="default_goal">10000</string>
     <string name="ok">Ok</string>
     <string name="cancel">Cancel</string>
+    <string name="alarm_on">Alarm On</string>
+    <string name="alarm_off">Alarm Off</string>
 
 
 </resources>
