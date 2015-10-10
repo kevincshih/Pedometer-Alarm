@@ -4,6 +4,7 @@ import android.app.AlarmManager;
 import android.app.Fragment;
 import android.app.PendingIntent;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -19,8 +20,9 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
+import android.view.View.OnClickListener;
 
-public class FragmentTab1 extends Fragment {
+public class FragmentTab1 extends Fragment implements View.OnClickListener {
 
     //private PendingIntent pendingIntent;
     //private AlarmManager manager;
@@ -53,12 +55,42 @@ public class FragmentTab1 extends Fragment {
         alarmOnText = (TextView) rootView.findViewById(R.id.alarm_on_text);
         goalText = (TextView) rootView.findViewById(R.id.goal_text);
 
+
         // Retrieve a PendingIntent that will perform a broadcast
 
         //Intent alarmIntent = new Intent(this, AlarmReceiver.class);
         //pendingIntent = PendingIntent.getBroadcast(this, 0, alarmIntent, 0);
 
+
+        Button mButton = (Button) rootView.findViewById(R.id.test_alarm);
+        mButton.setOnClickListener(new OnClickListener() {
+            public void onClick(View v) {
+                Log.i("debug", "test_alarm_onClick");
+                Intent newIntent = new Intent(v.getContext(), PopupActivity.class);
+                newIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                newIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                v.getContext().startActivity(newIntent);
+            }
+        });
+
+
         return rootView;
+    }
+
+    @Override
+    public void onClick(View v){
+        Log.i("debug", "id = " + v.getId());
+        switch (v.getId()){
+            case R.id.test_alarm:
+                Log.i("debug", "test_alarm");
+                Intent newIntent = new Intent(v.getContext(), PopupActivity.class);
+                newIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                newIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                v.getContext().startActivity(newIntent);
+                break;
+            default:
+                break;
+        }
     }
 
 
@@ -87,10 +119,15 @@ public class FragmentTab1 extends Fragment {
         goalText.setText(Integer.toString(goal));
         Log.i("debug", "goal text set");
     }
-    public void updateAlarmTime(String alarmTime){
+    public void updateAlarmTime(String alarmTime, boolean alarmOn){
         Log.i("debug", alarmTime);
         Log.i("debug", alarmTimeText.toString());
-        alarmTimeText.setText(alarmTime);
+        if (alarmOn){
+            alarmTimeText.setText(alarmTime);
+        }
+        else {
+            alarmTimeText.setText("");
+        }
     }
     public void updateAlarmOn(boolean alarmOn){
         Log.i("debug", "alarmOn = " + alarmOn);
@@ -99,10 +136,8 @@ public class FragmentTab1 extends Fragment {
             alarmOnText.setText(getResources().getString(R.string.alarm_on));
         }
         else{
-            alarmOnText.setText(getResources().getString(R.string.alarm_off));
+            alarmOnText.setText("");
         }
     }
-
-
 
 }

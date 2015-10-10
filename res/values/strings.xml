@@ -10,6 +10,8 @@
     <string name="cancel">Cancel</string>
     <string name="alarm_on">Alarm On</string>
     <string name="alarm_off">Alarm Off</string>
+    <string name="popup">Pedometer Alarm</string>
+    <string name="popup_text">Time to go for a walk!</string>
 
 
 </resources>

@@ -3,10 +3,13 @@ package com.starboardland.pedometer;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlarmManager;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.Fragment;
 import android.app.PendingIntent;
 import android.app.SearchManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.hardware.*;
@@ -43,6 +46,8 @@ public class CounterActivity extends Activity implements SensorEventListener {
     private long alarmTimeMs;
     private SharedPreferences preferences;
     private static SharedPreferences.OnSharedPreferenceChangeListener sharedPreferenceChangeListener;
+    private static final int DIALOG_ALERT = 10;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -102,14 +107,15 @@ public class CounterActivity extends Activity implements SensorEventListener {
                 FragmentTab1 ft1 = (FragmentTab1) fragmentTab1;
                 Log.i("debug", "onSharedPreferenceChanged key = " + key);
                 if (key.equals(getResources().getString(R.string.time))) {
+                    alarmOn = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean(getString(R.string.alarm), false);
                     alarmTime = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString(getString(R.string.time), getString(R.string.default_time));
                     Calendar calendar = Calendar.getInstance();
                     calendar.set(Calendar.HOUR_OF_DAY, TimePreference.getHour(alarmTime));
                     calendar.set(Calendar.MINUTE, TimePreference.getMinute(alarmTime));
                     calendar.set(Calendar.SECOND, 00);
                     alarmTimeMs = calendar.getTimeInMillis();
-                    SimpleDateFormat sdf = new SimpleDateFormat("HH:mm a");
-                    ft1.updateAlarmTime(sdf.format(calendar.getTime()));
+                    SimpleDateFormat sdf = new SimpleDateFormat("h:mm a");
+                    ft1.updateAlarmTime(sdf.format(calendar.getTime()), alarmOn);
                     Log.i("debug", "alarmTimeMs = " + alarmTimeMs);
 
                 } else if (key.equals(getResources().getString(R.string.goal))) {
@@ -126,10 +132,15 @@ public class CounterActivity extends Activity implements SensorEventListener {
                     ft1.updateAlarmOn(alarmOn);
                     Log.i("debug", "alarmOn = " + alarmOn);
                     if (alarmOn) {
-                        Intent myIntent = new Intent(getApplicationContext(), AlarmReceiver.class);
+                        Intent intent = new Intent(getApplicationContext(), AlarmReceiver.class);
+                        PendingIntent pendingIntent = PendingIntent.getBroadcast(
+                                getApplicationContext(), 234324243, intent, 0);
+                        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+                        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, alarmTimeMs, AlarmManager.INTERVAL_DAY, pendingIntent);
+                        /*Intent myIntent = new Intent(getApplicationContext(), AlarmReceiver.class);
                         PendingIntent pendingIntent = PendingIntent.getService(getApplicationContext(), 0, myIntent, 0);
                         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-                        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, alarmTimeMs, AlarmManager.INTERVAL_DAY, pendingIntent);
+                        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, alarmTimeMs, AlarmManager.INTERVAL_DAY, pendingIntent);*/
                     }
                 }
             }
@@ -137,6 +148,8 @@ public class CounterActivity extends Activity implements SensorEventListener {
 
         preferences=PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         preferences.registerOnSharedPreferenceChangeListener(sharedPreferenceChangeListener);
+
+
 
 
     }
@@ -158,8 +171,6 @@ public class CounterActivity extends Activity implements SensorEventListener {
 
     }
     */
-
-
 
     @Override
     protected void onResume() {
@@ -293,6 +304,33 @@ public class CounterActivity extends Activity implements SensorEventListener {
         return alarmOn;
     }
 
+    @Override
+    protected Dialog onCreateDialog(int id) {
+        switch (id) {
+            case DIALOG_ALERT:
+                // Create out AlterDialog
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setMessage("This will end the activity");
+                builder.setCancelable(true);
+                builder.setPositiveButton("Ok", new OkOnClickListener());
+                builder.setNegativeButton("Cancel", new CancelOnClickListener());
+                AlertDialog dialog = builder.create();
+                dialog.show();
+        }
+        return super.onCreateDialog(id);
+    }
 
+    private final class CancelOnClickListener implements
+            DialogInterface.OnClickListener {
+        public void onClick(DialogInterface dialog, int which) {
+            //Toast.makeText(getApplicationContext(), "Activity will continue", Toast.LENGTH_LONG).show();
+        }
+    }
 
+    private final class OkOnClickListener implements
+            DialogInterface.OnClickListener {
+        public void onClick(DialogInterface dialog, int which) {
+            //AlertExampleActivity.this.finish();
+        }
+    }
 }

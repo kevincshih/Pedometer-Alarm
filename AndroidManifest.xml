@@ -5,6 +5,7 @@
       android:versionName="1.0">
 
     <uses-sdk android:targetSdkVersion="19" android:minSdkVersion="19"/>
+    <uses-permission android:name="android.permission.VIBRATE"></uses-permission>
 
     <application android:label="@string/app_name" android:icon="@drawable/ic_launcher">
         <activity android:name="CounterActivity"
@@ -16,5 +17,9 @@
         </activity>
         <activity android:name="MyPreferencesActivity" android:label="Settings"></activity>
         <receiver android:name=".AlarmReceiver"></receiver>
+        <activity android:name=".PopupActivity"
+            android:theme="@android:style/Theme.Dialog"
+            android:label="@string/popup"
+            ></activity>
     </application>
 </manifest>
