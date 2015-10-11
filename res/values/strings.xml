@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">CounterActivity</string>
+    <string name="app_name">Pedometer Alarm</string>
     <string name="alarm">alarm</string>
     <string name="time">time</string>
     <string name="default_time">18:00</string>

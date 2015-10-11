@@ -30,6 +30,7 @@ import android.preference.PreferenceScreen;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.concurrent.TimeUnit;
 
 
 public class CounterActivity extends Activity implements SensorEventListener {
@@ -56,23 +57,6 @@ public class CounterActivity extends Activity implements SensorEventListener {
         Log.i("debug", "onCreate");
         ActionBar actionBar = getActionBar();
         steps = 0;
-        /*
-        alarmTime = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString(getString(R.string.time), getString(R.string.default_time));
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.HOUR_OF_DAY, TimePreference.getHour(alarmTime));
-        calendar.set(Calendar.MINUTE, TimePreference.getMinute(alarmTime));
-        calendar.set(Calendar.SECOND, 00);
-        alarmTimeMs = calendar.getTimeInMillis();
-        goal = Integer.parseInt(PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString(getString(R.string.goal), getString(R.string.default_goal)));
-        alarmOn = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean(getString(R.string.alarm), false);
-        Log.i("debug", "alarmOn = " + alarmOn);
-        if (alarmOn) {
-            Intent myIntent = new Intent(getApplicationContext(), AlarmReceiver.class);
-            PendingIntent pendingIntent = PendingIntent.getService(getApplicationContext(), 0, myIntent, 0);
-            AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-            alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, alarmTimeMs, AlarmManager.INTERVAL_DAY, pendingIntent);
-        }
-        */
 
         // Hide Actionbar Icon
         //actionBar.setDisplayShowHomeEnabled(false);
@@ -84,7 +68,7 @@ public class CounterActivity extends Activity implements SensorEventListener {
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 
         // Set Tab Icon and Titles
-        Tab1 = actionBar.newTab().setText("Pedometer");
+        Tab1 = actionBar.newTab().setText("");
         //Tab3 = actionBar.newTab().setText("History");
 
         // Set Tab Listeners
@@ -98,8 +82,6 @@ public class CounterActivity extends Activity implements SensorEventListener {
         Log.i("debug", "actionBar done");
 
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-
-
 
         sharedPreferenceChangeListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
             @Override
@@ -130,17 +112,24 @@ public class CounterActivity extends Activity implements SensorEventListener {
                 } else if (key.equals(getResources().getString(R.string.alarm))) {
                     alarmOn = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean(getString(R.string.alarm), false);
                     ft1.updateAlarmOn(alarmOn);
+                    Intent intent = new Intent(getApplicationContext(), AlarmReceiver.class);
+                    PendingIntent pendingIntent = PendingIntent.getBroadcast(
+                            getApplicationContext(), 234324243, intent, 0);
+                    AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+
                     Log.i("debug", "alarmOn = " + alarmOn);
                     if (alarmOn) {
-                        Intent intent = new Intent(getApplicationContext(), AlarmReceiver.class);
-                        PendingIntent pendingIntent = PendingIntent.getBroadcast(
-                                getApplicationContext(), 234324243, intent, 0);
-                        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
                         alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, alarmTimeMs, AlarmManager.INTERVAL_DAY, pendingIntent);
-                        /*Intent myIntent = new Intent(getApplicationContext(), AlarmReceiver.class);
-                        PendingIntent pendingIntent = PendingIntent.getService(getApplicationContext(), 0, myIntent, 0);
-                        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-                        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, alarmTimeMs, AlarmManager.INTERVAL_DAY, pendingIntent);*/
+                        long millis = alarmTimeMs - System.currentTimeMillis();
+                        String s = String.format("%d hours and %d minutes",
+                                TimeUnit.MILLISECONDS.toHours(millis),
+                                TimeUnit.MILLISECONDS.toMinutes(millis) -
+                                        TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(millis))
+                        );
+                        Toast.makeText(getApplicationContext(), "Alarm set for " + s + " from now.", Toast.LENGTH_LONG).show();
+                    }
+                    else {
+                        alarmManager.cancel(pendingIntent);
                     }
                 }
             }
@@ -148,9 +137,6 @@ public class CounterActivity extends Activity implements SensorEventListener {
 
         preferences=PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         preferences.registerOnSharedPreferenceChangeListener(sharedPreferenceChangeListener);
-
-
-
 
     }
     /*
@@ -182,11 +168,17 @@ public class CounterActivity extends Activity implements SensorEventListener {
         sharedPreferenceChangeListener.onSharedPreferenceChanged(preferences, getResources().getString(R.string.goal));
         sharedPreferenceChangeListener.onSharedPreferenceChanged(preferences, getResources().getString(R.string.alarm));
 
+        if (sensorManager != null){
+
         Sensor countSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
         Log.i("debug", "countSensor");
         if (countSensor != null) {
             sensorManager.registerListener(this, countSensor, SensorManager.SENSOR_DELAY_UI);
         } else {
+            Toast.makeText(this, "Count sensor not available!", Toast.LENGTH_LONG).show();
+        }
+        }
+        else {
             Toast.makeText(this, "Count sensor not available!", Toast.LENGTH_LONG).show();
         }
 

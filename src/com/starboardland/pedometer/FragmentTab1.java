@@ -22,7 +22,7 @@ import android.widget.Toast;
 import android.widget.ToggleButton;
 import android.view.View.OnClickListener;
 
-public class FragmentTab1 extends Fragment implements View.OnClickListener {
+public class FragmentTab1 extends Fragment {
 
     //private PendingIntent pendingIntent;
     //private AlarmManager manager;
@@ -61,36 +61,7 @@ public class FragmentTab1 extends Fragment implements View.OnClickListener {
         //Intent alarmIntent = new Intent(this, AlarmReceiver.class);
         //pendingIntent = PendingIntent.getBroadcast(this, 0, alarmIntent, 0);
 
-
-        Button mButton = (Button) rootView.findViewById(R.id.test_alarm);
-        mButton.setOnClickListener(new OnClickListener() {
-            public void onClick(View v) {
-                Log.i("debug", "test_alarm_onClick");
-                Intent newIntent = new Intent(v.getContext(), PopupActivity.class);
-                newIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                newIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                v.getContext().startActivity(newIntent);
-            }
-        });
-
-
         return rootView;
-    }
-
-    @Override
-    public void onClick(View v){
-        Log.i("debug", "id = " + v.getId());
-        switch (v.getId()){
-            case R.id.test_alarm:
-                Log.i("debug", "test_alarm");
-                Intent newIntent = new Intent(v.getContext(), PopupActivity.class);
-                newIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                newIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                v.getContext().startActivity(newIntent);
-                break;
-            default:
-                break;
-        }
     }
 
 
