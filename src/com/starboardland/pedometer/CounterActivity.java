@@ -6,6 +6,7 @@ import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.Fragment;
+import android.app.FragmentManager;
 import android.app.PendingIntent;
 import android.app.SearchManager;
 import android.content.Context;
@@ -32,6 +33,8 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.concurrent.TimeUnit;
 
+import android.app.FragmentTransaction;
+
 
 public class CounterActivity extends Activity implements SensorEventListener {
 
@@ -41,7 +44,8 @@ public class CounterActivity extends Activity implements SensorEventListener {
     Fragment fragmentTab3 = new FragmentTab3();
 
     private SensorManager sensorManager;
-    private static int steps, goal;
+    private static int steps = 0;
+    private static int goal = 0;
     private static boolean activityRunning, alarmOn;
     private static String alarmTime;
     private long alarmTimeMs;
@@ -49,14 +53,25 @@ public class CounterActivity extends Activity implements SensorEventListener {
     private static SharedPreferences.OnSharedPreferenceChangeListener sharedPreferenceChangeListener;
     private static final int DIALOG_ALERT = 10;
 
+    private static int day = 0;
+    private static int stepsBeforeToday = 0;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
-        Log.i("debug", "onCreate");
-        ActionBar actionBar = getActionBar();
-        steps = 0;
+        Log.i("idebug", "onCreate");
+
+        FragmentManager fragmentManager = getFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        //FragmentTab1 ft1 = (FragmentTab1) fragmentTab1;
+        fragmentTransaction.add(R.id.fragment_container, fragmentTab1);
+        fragmentTransaction.commit();
+
+
+        //ActionBar actionBar = getActionBar();
+        //steps = 0;
 
         // Hide Actionbar Icon
         //actionBar.setDisplayShowHomeEnabled(false);
@@ -65,21 +80,21 @@ public class CounterActivity extends Activity implements SensorEventListener {
         //actionBar.setDisplayShowTitleEnabled(false);
 
         // Create Actionbar Tabs
-        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+        //actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 
         // Set Tab Icon and Titles
-        Tab1 = actionBar.newTab().setText("");
+        //Tab1 = actionBar.newTab().setText("");
         //Tab3 = actionBar.newTab().setText("History");
 
         // Set Tab Listeners
-        Tab1.setTabListener(new TabListener(fragmentTab1));
+        //Tab1.setTabListener(new TabListener(fragmentTab1));
         //Tab3.setTabListener(new TabListener(fragmentTab3));
 
         // Add tabs to actionbar
-        actionBar.addTab(Tab1);
+        //actionBar.addTab(Tab1);
         //actionBar.addTab(Tab2);
         //actionBar.addTab(Tab3);
-        Log.i("debug", "actionBar done");
+        //Log.i("idebug", "actionBar done");
 
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
 
@@ -87,7 +102,7 @@ public class CounterActivity extends Activity implements SensorEventListener {
             @Override
             public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
                 FragmentTab1 ft1 = (FragmentTab1) fragmentTab1;
-                Log.i("debug", "onSharedPreferenceChanged key = " + key);
+                Log.i("idebug", "onSharedPreferenceChanged key = " + key);
                 if (key.equals(getResources().getString(R.string.time))) {
                     alarmOn = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean(getString(R.string.alarm), false);
                     alarmTime = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString(getString(R.string.time), getString(R.string.default_time));
@@ -98,7 +113,7 @@ public class CounterActivity extends Activity implements SensorEventListener {
                     alarmTimeMs = calendar.getTimeInMillis();
                     SimpleDateFormat sdf = new SimpleDateFormat("h:mm a");
                     ft1.updateAlarmTime(sdf.format(calendar.getTime()), alarmOn);
-                    Log.i("debug", "alarmTimeMs = " + alarmTimeMs);
+                    Log.i("idebug", "alarmTimeMs = " + alarmTimeMs);
 
                 } else if (key.equals(getResources().getString(R.string.goal))) {
                     goal = Integer.parseInt(PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString(getString(R.string.goal), getString(R.string.default_goal)));
@@ -107,7 +122,7 @@ public class CounterActivity extends Activity implements SensorEventListener {
                         goal = 1;
                     }
                     ft1.updateGoal(goal);
-                    Log.i("debug", "goal = " + goal);
+                    Log.i("idebug", "goal = " + goal);
 
                 } else if (key.equals(getResources().getString(R.string.alarm))) {
                     alarmOn = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean(getString(R.string.alarm), false);
@@ -117,10 +132,16 @@ public class CounterActivity extends Activity implements SensorEventListener {
                             getApplicationContext(), 234324243, intent, 0);
                     AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
 
-                    Log.i("debug", "alarmOn = " + alarmOn);
+                    Log.i("idebug", "alarmOn = " + alarmOn);
                     if (alarmOn) {
+                        long millis = (alarmTimeMs - System.currentTimeMillis());
+                        if (millis < 0){
+                            millis = millis + TimeUnit.DAYS.toMillis(1);
+                            alarmTimeMs = alarmTimeMs + TimeUnit.DAYS.toMillis(1);
+                        }
                         alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, alarmTimeMs, AlarmManager.INTERVAL_DAY, pendingIntent);
-                        long millis = alarmTimeMs - System.currentTimeMillis();
+                        Log.i("idebug", "alarmTimeMs = " + millis);
+
                         String s = String.format("%d hours and %d minutes",
                                 TimeUnit.MILLISECONDS.toHours(millis),
                                 TimeUnit.MILLISECONDS.toMinutes(millis) -
@@ -161,7 +182,7 @@ public class CounterActivity extends Activity implements SensorEventListener {
     @Override
     protected void onResume() {
         super.onResume();
-        Log.i("debug", "onResume");
+        Log.i("idebug", "onResume");
         activityRunning = true;
 
         sharedPreferenceChangeListener.onSharedPreferenceChanged(preferences, getResources().getString(R.string.time));
@@ -171,7 +192,7 @@ public class CounterActivity extends Activity implements SensorEventListener {
         if (sensorManager != null){
 
         Sensor countSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
-        Log.i("debug", "countSensor");
+        Log.i("idebug", "countSensor");
         if (countSensor != null) {
             sensorManager.registerListener(this, countSensor, SensorManager.SENSOR_DELAY_UI);
         } else {
@@ -182,13 +203,13 @@ public class CounterActivity extends Activity implements SensorEventListener {
             Toast.makeText(this, "Count sensor not available!", Toast.LENGTH_LONG).show();
         }
 
-        Log.i("debug", "onResume done");
+        Log.i("idebug", "onResume done");
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        Log.i("debug", "onPause done");
+        Log.i("idebug", "onPause done");
         activityRunning = false;
         // if you unregister the last listener, the hardware will stop detecting step events
         //sensorManager.unregisterListener(this);
@@ -232,7 +253,7 @@ public class CounterActivity extends Activity implements SensorEventListener {
     //static final int CHANGE_SETTINGS_REQUEST = 1;
     public void openSettings(){
         Intent i = new Intent(this, MyPreferencesActivity.class);
-        Log.i("Debug", "openSettings");
+        Log.i("idebug", "openSettings");
         //startActivityForResult(i, CHANGE_SETTINGS_REQUEST);
         startActivity(i);
     }
@@ -254,9 +275,9 @@ public class CounterActivity extends Activity implements SensorEventListener {
                 calendar.set(Calendar.HOUR_OF_DAY, TimePreference.getHour(alarmTime));
                 calendar.set(Calendar.MINUTE, TimePreference.getMinute(alarmTime));
                 calendar.set(Calendar.SECOND, 00);
-                Log.i("debug", "alarmOn = " + alarmOn);
-                Log.i("debug", "alarmTime = " + alarmTime);
-                Log.i("debug", "goal = " + goal);
+                Log.i("idebug", "alarmOn = " + alarmOn);
+                Log.i("idebug", "alarmTime = " + alarmTime);
+                Log.i("idebug", "goal = " + goal);
                 if (alarmOn){
                     Intent myIntent = new Intent(this, AlarmReceiver.class);
                     PendingIntent pendingIntent = PendingIntent.getService(this, 0, myIntent, 0);
@@ -270,21 +291,33 @@ public class CounterActivity extends Activity implements SensorEventListener {
 
     @Override
     public void onSensorChanged(SensorEvent event) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(System.currentTimeMillis());
+        int today = calendar.get(Calendar.DAY_OF_MONTH);
+        steps = Math.round(event.values[0]);
+        Log.i("idebug", "steps = " + steps + " day = " + day + " today = " + today);
+
+        if (day != today){
+            day = today;
+            stepsBeforeToday = steps;
+        }
+
         if (activityRunning) {
-            Log.i("debug", "SensorChanged:event = " + event.toString());
-            steps = Math.round(event.values[0]);
-            FragmentTab1 ft1 = (FragmentTab1) fragmentTab1;
-            ft1.update();
-            Log.i("debug", "done");
+        Log.i("idebug", "SensorChanged:event = " + event.toString());
+        FragmentTab1 ft1 = (FragmentTab1) fragmentTab1;
+        ft1.update();
+        Log.i("idebug", "done");
         }
     }
+
+
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
     }
 
     public static int getSteps() {
-        return steps;
+        return steps - stepsBeforeToday;
     }
     public static int getGoal() {
         return goal;

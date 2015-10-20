@@ -39,21 +39,23 @@ public class FragmentTab1 extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragmenttab1, container, false);
-        Log.i("debug", "rootView");
+        Log.i("idebug", "rootView = " + rootView.toString());
 
         count = (TextView) rootView.findViewById(R.id.count);
-        Log.i("debug", "count = " + count.toString());
+        Log.i("idebug", "count = " + count.toString());
         count.setText("10000");
-        Log.i("debug", "count set text");
+        Log.i("idebug", "count set text");
 
 
         mProgress = (ProgressBar) rootView.findViewById(R.id.circle_progress_bar);
-        Log.i("debug", "mProgress = " + mProgress.toString());
+        Log.i("idebug", "mProgress = " + mProgress.toString());
 
 
         alarmTimeText = (TextView) rootView.findViewById(R.id.alarm_time_text);
         alarmOnText = (TextView) rootView.findViewById(R.id.alarm_on_text);
         goalText = (TextView) rootView.findViewById(R.id.goal_text);
+
+        Log.i("idebug", "alarmTimeText = " + alarmTimeText.toString());
 
 
         // Retrieve a PendingIntent that will perform a broadcast
@@ -68,31 +70,31 @@ public class FragmentTab1 extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        Log.i("debug", "onResume FT1");
+        Log.i("idebug", "onResume FT1");
         update();
     }
 
     public void update() {
         steps = CounterActivity.getSteps();
         goal = CounterActivity.getGoal();
-        Log.i("debug", "SetText:steps = " + steps);
-        Log.i("debug", "count = " + count.toString());
-        Log.i("debug", "goal = " + goal);
+        Log.i("idebug", "SetText:steps = " + steps);
+        Log.i("idebug", "count = " + count.toString());
+        Log.i("idebug", "goal = " + goal);
 
         count.setText(String.valueOf(steps));
-        Log.i("debug", "setProgress:progress = " + steps * 100 / goal);
+        Log.i("idebug", "setProgress:progress = " + steps * 100 / goal);
         mProgress.setProgress(steps * 100 / goal);
     }
 
     public void updateGoal(int goal){
-        Log.i("debug", "goal = " + goal);
-        Log.i("debug", goalText.toString());
+        Log.i("idebug", "goal = " + goal);
+        Log.i("idebug", goalText.toString());
         goalText.setText(Integer.toString(goal));
-        Log.i("debug", "goal text set");
+        Log.i("idebug", "goal text set");
     }
     public void updateAlarmTime(String alarmTime, boolean alarmOn){
-        Log.i("debug", alarmTime);
-        Log.i("debug", alarmTimeText.toString());
+        Log.i("idebug", alarmTime);
+        Log.i("idebug", alarmTimeText.toString());
         if (alarmOn){
             alarmTimeText.setText(alarmTime);
         }
@@ -101,8 +103,8 @@ public class FragmentTab1 extends Fragment {
         }
     }
     public void updateAlarmOn(boolean alarmOn){
-        Log.i("debug", "alarmOn = " + alarmOn);
-        Log.i("debug", alarmOnText.toString());
+        Log.i("idebug", "alarmOn = " + alarmOn);
+        Log.i("idebug", alarmOnText.toString());
         if (alarmOn){
             alarmOnText.setText(getResources().getString(R.string.alarm_on));
         }

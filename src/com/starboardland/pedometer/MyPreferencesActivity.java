@@ -12,9 +12,9 @@ public class MyPreferencesActivity extends PreferenceActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.i("Debug", "onCreate MyPreferencesActivity");
+        Log.i("idebug", "onCreate MyPreferencesActivity");
         super.onCreate(savedInstanceState);
-        Log.i("Debug", "getFragmentManager");
+        Log.i("idebug", "getFragmentManager");
         getFragmentManager().beginTransaction().replace(android.R.id.content, new MyPreferenceFragment()).commit();
     }
 
@@ -35,20 +35,20 @@ public class MyPreferencesActivity extends PreferenceActivity {
 
     /*@Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        Log.i("debug", "item id = " + item.getItemId());
+        Log.i("idebug", "item id = " + item.getItemId());
 
         switch (item.getItemId()) {
             case R.id.ok:
                 setResult(RESULT_OK, new Intent());
-                Log.i("debug", "ok");
+                Log.i("idebug", "ok");
                 finish();
-                Log.i("debug", "finish");
+                Log.i("idebug", "finish");
                 return true;
             case R.id.cancel:
                 setResult(RESULT_OK);
-                Log.i("debug", "cancel");
+                Log.i("idebug", "cancel");
                 finish();
-                Log.i("debug", "finish");
+                Log.i("idebug", "finish");
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -60,9 +60,9 @@ public class MyPreferencesActivity extends PreferenceActivity {
         @Override
         public void onCreate(final Bundle savedInstanceState)
         {
-            Log.i("Debug", "onCreate MyPreferenceFragment");
+            Log.i("idebug", "onCreate MyPreferenceFragment");
             super.onCreate(savedInstanceState);
-            Log.i("Debug", "addPreferencesFromResource");
+            Log.i("idebug", "addPreferencesFromResource");
             addPreferencesFromResource(R.xml.settings);
         }
     }

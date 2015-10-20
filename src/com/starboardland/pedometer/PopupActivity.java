@@ -11,7 +11,7 @@ public class PopupActivity extends Activity {
 
 @Override
 public void onCreate(Bundle savedInstanceState) {
-    Log.i("debug", "onCreate popup");
+    Log.i("idebug", "onCreate popup");
     super.onCreate(savedInstanceState);
     setContentView(R.layout.popup);
 }
