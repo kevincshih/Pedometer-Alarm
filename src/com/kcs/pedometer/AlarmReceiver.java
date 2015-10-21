@@ -1,4 +1,4 @@
-package com.starboardland.pedometer;
+package com.kcs.pedometer;
 
 import android.app.Notification;
 import android.app.NotificationManager;

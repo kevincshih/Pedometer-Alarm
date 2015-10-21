@@ -1,4 +1,4 @@
-package com.starboardland.pedometer;
+package com.kcs.pedometer;
 
 import android.app.Activity;
 import android.os.Bundle;
